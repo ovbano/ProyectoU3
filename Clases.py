@@ -2,12 +2,12 @@
 import datetime
 import tkinter as tk
 import pymongo
+from tkcalendar import Calendar, DateEntry 
 from tkinter import *
 from tkinter import messagebox
 import requests 
 import os
 import re
-from form_login import App 
 import json
 from dateutil.easter import easter
 from dateutil.relativedelta import relativedelta as rd, FR
@@ -15,7 +15,7 @@ from holidays.constants import JAN, MAY, AUG, OCT, NOV, DEC, JUL
 from holidays.holiday_base import HolidayBase
 from crarPDF import *
 from Acreditate import *
-
+from form_login import App
 
 class HolidayEcuador(HolidayBase):
     """
@@ -758,6 +758,15 @@ def generarPDF (cedula,fecha,hora):
         messagebox.showinfo("Información","PDF generado con exito")
         pdf.output('hoja.pdf')
 
+def iniciarsecion ():
+    '''
+    Funcion que retorna la instancia de la clase App
+    Que con tiene la interfaz gráfica del inicio de 
+    secion.
+    '''
+    instacia1=App()
+    return instacia1
+
 
 def solicitarTurno():
     '''
@@ -771,7 +780,6 @@ def solicitarTurno():
     turno.title("Acreditate")
     turno.geometry("800x400")
     turno.config(bg = "gray97")
-    #turno.iconbitmap("prestamo.ico")
     
     #agrandar la ventana, abajo arriba, izquierda derecha
 
@@ -859,7 +867,7 @@ def ventanaPrincipal ():
 
     #------------------------------Botones----------------------------
     Button(usuario, text='Apartar turno',command=solicitarTurno,bg = "#4779b2", fg="white", font = ("Arial",11)).grid(row=2, columnspan=3, padx=10, pady=10)
-    Button(usuario, text='Registrar Usuario',command=lambda: App(), bg = "#4779b2", fg="white", font = ("Arial",11)).grid(row=3, columnspan=3, padx=10, pady=10)
+    Button(usuario, text='Registrar Usuario',command= iniciarsecion, bg = "#4779b2", fg="white", font = ("Arial",11)).grid(row=3, columnspan=3, padx=10, pady=10)
     campos.mainloop()
 
 
@@ -885,3 +893,4 @@ if __name__ == '__main__':
     ventanaPrincipal()
 
     #2300521914
+
