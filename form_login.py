@@ -1,12 +1,14 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from tkinter.font import BOLD
-import generic as utl
-from main import mainP
+import pymongo
 from form_master import *
+from main import *
 
 class App:
-    
+    myclient = pymongo.MongoClient('mongodb://localhost:27017/')
+    mydb = myclient['Ciudadanos']
+    mycol = mydb['Colaboradores']
     '''
     La clase App Permitirá realizar un login
 
@@ -17,18 +19,63 @@ class App:
              Método init construye las ventanas y demás arreglos para 
              la interfaz.
     '''
+    def msgbox(self,msg,titulobar):
+        '''
+        Permite enviar mensaje de información.
+
+         PARAMETROS
+         -----------
+             msg: str
+                 Es el mensaje que se imprimerá por pantalla
+             titulobar: str
+                 Es el título que contendrá la ventana
+
+         Retorna
+         ---------
+             result
+        '''
+        self.result=messagebox.askokcancel(title=titulobar,message=msg)
+        return self.result
+    
+    def modifica(self):
+        mainP=BaseData()
+
+        return mainP
+
+    def conecDBusaer (self):
+        '''
+        Permite hallar el usuario correspondiente en la base de datos mongo
+
+         RETORNA
+         --------
+             return user
+        '''
+        myquerry={'Correo':self.usuario.get()}
+        user = self.mycol.find_one(myquerry)
+        return user
+
+    def conecDBpass (self):
+        '''
+        Permite hallar la contraseña correspondiente en la base de datos mongo
+
+         RETORNA
+         --------
+             return passw 
+        '''
+        myquerry={'Cedula':self.password.get()}
+        passw = self.mycol.find_one(myquerry)
+        return passw 
+
     def verificar(self):
         '''
         Permite validad el correcto ingreso de la contraseña y el usuario.
-        '''
-        usu = self.usuario.get()
-        password = self.password.get()        
-        if(usu == "root" and password == "1234") :
+        '''       
+        if(self.conecDBusaer() and self.conecDBpass()) :
             self.ventana.destroy()
-            mainP()
+            self.modifica()
         else:
             messagebox.showerror(message="El usuario o la contraseña no es correcta",title="Mensaje")           
-                      
+
     def __init__(self):  
         '''
         Crea la parte parte de la interfaz del proyecto.
@@ -37,15 +84,6 @@ class App:
         self.ventana.title('Inicio de sesion')
         self.ventana.geometry('800x500')
         self.ventana.config(bg='#fcfcfc')
-        self.ventana.resizable(width=0, height=0)    
-        #utl.centrar_ventana(self.ventana,800,500)
-        
-        logo =utl.leer_imagen("credito.png", (250, 250))
-        # frame_logo
-        frame_logo = tk.Frame(self.ventana, bd=0, width=200, relief=tk.SOLID, padx=10, pady=10,bg='white')
-        frame_logo.pack(side="left",expand=tk.YES,fill=tk.BOTH)
-        #label = tk.Label( frame_logo, image=logo,bg='gray99' )
-        #label.place(x=0,y=0,relwidth=1, relheight=1)
         
         #frame_form
         frame_form = tk.Frame(self.ventana, bd=0, relief=tk.SOLID, bg='')
@@ -76,10 +114,9 @@ class App:
 
         inicio = tk.Button(frame_form_fill,text="Iniciar sesion",font=('Times', 15,BOLD),bg='#3a7ff6', bd=0,fg="#fff",command=self.verificar)
         inicio.pack(fill=tk.X, padx=20,pady=20)        
-        inicio.bind("<Return>", (lambda event: self.verificar()))
-        #end frame_form_fill
+        inicio.bind("<Return>", (lambda: self.verificar()))
         self.ventana.mainloop()
-        
+
 if __name__ == "__main__":
 
     #Instanciando la clase App para logiar al usuario
